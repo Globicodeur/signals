@@ -58,11 +58,47 @@ static void something_else() {
 }
 
 // =============================================================================
+#include "signals/named/signal.hpp"
+
+using namespace std::string_literals;
+
+namespace spec {
+    constexpr char sig1[] = "sig1";
+    constexpr char sig2[] = "sig2";
+}
+
+static void named_signals() {
+
+    struct Receiver {
+        Receiver() {
+
+            signals::named::on<spec::sig1>([] {
+                std::cout << spec::sig1 << " received\n";
+            });
+
+            signals::named::on<spec::sig2, int, std::string>(
+                [](auto a, auto b) {
+                    std::cout << spec::sig2 << " received with "
+                              << a << " and " << b << "\n";
+                }
+            );
+
+        }
+    };
+
+    Receiver r1, r2;
+
+    signals::named::emit<spec::sig1>();
+    signals::named::emit<spec::sig2>(42, "Hello"s);
+}
+
+// =============================================================================
 
 int main() {
     hello_world();
-
     something_else();
+
+    named_signals();
 
     return 0;
 }
