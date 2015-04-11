@@ -15,18 +15,18 @@ namespace signals {
 
             template <class F>
             static void bind(F && f) {
-                instance().sig_ >> std::forward<F>(f);
+                self().sig_ >> std::forward<F>(f);
             }
 
-            static void emit(const Args &... args) {
-                instance().sig_(args...);
+            static void emit(Args &&... args) {
+                self().sig_(std::forward<Args>(args)...);
             }
 
         private:
 
             signal() = default;
 
-            static signal & instance() {
+            static signal & self() {
                 static signal<name, Args...> sig;
                 return sig;
             }
