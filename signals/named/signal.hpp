@@ -35,15 +35,5 @@ namespace signals {
 
         };
 
-        template <const char * name, class... Args, class F>
-        void on(F && f) {
-            signal<name, Args...>::bind(std::forward<F>(f));
-        }
-
-        template <const char * name, class... Args>
-        void emit(Args &&... args) {
-            signal<name, Args...>::emit(std::forward<Args>(args)...);
-        }
-
     }
 }

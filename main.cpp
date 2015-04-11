@@ -59,6 +59,8 @@ static void something_else() {
 
 // =============================================================================
 #include "signals/named/signal.hpp"
+#include "signals/named/on.hpp"
+#include "signals/named/emit.hpp"
 
 using namespace std::string_literals;
 
@@ -78,6 +80,13 @@ static void named_signals() {
 
             signals::named::on<spec::sig2, int, std::string>(
                 [](auto a, auto b) {
+                    std::cout << spec::sig2 << " received with "
+                              << a << " and " << b << "\n";
+                }
+            );
+
+            signals::named::on_<spec::sig2>(
+                [](int a, const std::string & b) {
                     std::cout << spec::sig2 << " received with "
                               << a << " and " << b << "\n";
                 }
