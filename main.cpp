@@ -58,34 +58,34 @@ static void something_else() {
 }
 
 // =============================================================================
-#include "signals/named/signal.hpp"
-#include "signals/named/on.hpp"
-#include "signals/named/emit.hpp"
+#include "signals/literal/from.hpp"
 
 using namespace std::string_literals;
 
 namespace spec {
-    constexpr char sig1[] = "sig1";
-    constexpr char sig2[] = "sig2";
+    auto sig1 = "sig1"s;
+    auto sig2 = "sig2"s;
 }
 
 static void named_signals() {
 
+    using dispatcher_t = signals::literal::from<std::string &>;
+
     struct Receiver {
         Receiver() {
 
-            signals::named::on<spec::sig1>([] {
+            dispatcher_t::on<spec::sig1>([] {
                 std::cout << spec::sig1 << " received\n";
             });
 
-            signals::named::on<spec::sig2, int, std::string>(
+            dispatcher_t::on<spec::sig2, int, std::string>(
                 [](auto a, auto b) {
                     std::cout << spec::sig2 << " received with "
                               << a << " and " << b << "\n";
                 }
             );
 
-            signals::named::on_<spec::sig2>(
+            dispatcher_t::on_<spec::sig2>(
                 [](int a, const std::string & b) {
                     std::cout << spec::sig2 << " received with "
                               << a << " and " << b << "\n";
@@ -97,8 +97,39 @@ static void named_signals() {
 
     Receiver r1, r2;
 
-    signals::named::emit<spec::sig1>();
-    signals::named::emit<spec::sig2>(42, "Hello"s);
+    dispatcher_t::emit<spec::sig1>();
+    dispatcher_t::emit<spec::sig2>(42, "Hello"s);
+}
+
+// =============================================================================
+
+enum class Inputs {
+    A,
+    B,
+    C,
+    D
+};
+
+static void enumerated_signals() {
+
+    using dispatcher_t = signals::literal::from<Inputs>;
+
+    dispatcher_t::on<Inputs::A>([] {
+        std::cout << "A\n";
+    });
+
+    dispatcher_t::on<Inputs::B, int>([](auto i) {
+        std::cout << "B " << i << "\n";
+    });
+
+    dispatcher_t::on_<Inputs::C>([](std::string s, int i) {
+        std::cout << "C " << s << " " << i << "\n";
+    });
+
+    dispatcher_t::emit<Inputs::A>();
+    dispatcher_t::emit<Inputs::B>(42);
+    dispatcher_t::emit<Inputs::C>("Hello"s, 1337);
+    dispatcher_t::emit<Inputs::D>("ignored");
 }
 
 // =============================================================================
@@ -108,6 +139,7 @@ int main() {
     something_else();
 
     named_signals();
+    enumerated_signals();
 
     return 0;
 }

@@ -3,9 +3,9 @@
 #include "../signal.hpp"
 
 namespace signals {
-    namespace named {
+    namespace literal {
 
-        template <const char * name, class... Args>
+        template <class LiteralT, LiteralT literal, class... Args>
         class signal {
 
         public:
@@ -27,7 +27,7 @@ namespace signals {
             signal() = default;
 
             static signal & self() {
-                static signal<name, Args...> sig;
+                static signal<LiteralT, literal, Args...> sig;
                 return sig;
             }
 

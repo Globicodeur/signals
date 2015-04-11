@@ -3,24 +3,26 @@
 #include "signal.hpp"
 
 namespace signals {
-    namespace named {
+    namespace literal {
 
-        template <const char * name, class... Args, class F>
+        template <class LiteralT, LiteralT literal, class... Args, class F>
         void on(F && f) {
-            signal<name, Args...>::bind(std::forward<F>(f));
+            signal<LiteralT, literal, Args...>::bind(std::forward<F>(f));
         }
 
         // Self deducing version from NON AMBIGUOUS F only
-        template <const char * name, class F> struct signal_deducer;
+        template <class LiteralT, LiteralT literal, class F>
+        struct signal_deducer;
 
-        template <const char * name, class F>
+        template <class LiteralT, LiteralT literal, class F>
         void on_(F && f) {
-            using deduced_signal_t = typename signal_deducer<name, F>::type;
+            using deduced_signal_t =
+                typename signal_deducer<LiteralT, literal, F>::type;
 
             deduced_signal_t::bind(std::forward<F>(f));
         }
 
-        template <const char * name, class F>
+        template <class LiteralT, LiteralT literal, class F>
         struct signal_deducer {
 
         private:
@@ -30,7 +32,11 @@ namespace signals {
             template <class R, class... Args>
             struct helper<R (F::*)(Args...) const> {
                 // Removing cv-qualifiers for all parameters
-                using type = signal<name, typename std::decay<Args>::type...>;
+                using type = signal<
+                    LiteralT,
+                    literal,
+                    typename std::decay<Args>::type...
+                >;
             };
 
         public:
