@@ -19,7 +19,7 @@ namespace signals {
             signal.slots.emplace_back(std::move(slot));
         }
 
-        void operator()(Args &&... args) const {
+        void operator()(const Args &... args) const {
             for (const slot_t & slot: slots)
                 slot(args...);
         }

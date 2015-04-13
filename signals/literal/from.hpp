@@ -23,10 +23,8 @@ namespace signals {
             }
 
             template <LiteralT literal, class... Args>
-            static void emit(Args &&... args) {
-                signals::literal::emit<LiteralT, literal, Args...>(
-                    std::forward<Args>(args)...
-                );
+            static void emit(const Args &... args) {
+                signals::literal::emit<LiteralT, literal, Args...>(args...);
             }
 
         };

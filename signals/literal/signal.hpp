@@ -18,8 +18,8 @@ namespace signals {
                 self().sig_ >> std::forward<F>(f);
             }
 
-            static void emit(Args &&... args) {
-                self().sig_(std::forward<Args>(args)...);
+            static void emit(const Args &... args) {
+                self().sig_(args...);
             }
 
         private:

@@ -6,10 +6,8 @@ namespace signals {
     namespace literal {
 
         template <class LiteralT, LiteralT literal, class... Args>
-        void emit(Args &&... args) {
-            signal<LiteralT, literal, Args...>::emit(
-                std::forward<Args>(args)...
-            );
+        void emit(const Args &... args) {
+            signal<LiteralT, literal, Args...>::emit(args...);
         }
 
     }
